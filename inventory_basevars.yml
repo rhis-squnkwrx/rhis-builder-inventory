@@ -1,0 +1,94 @@
+---
+# WARNING: Networks, Datastores and other underlying hypervisor/hyperscaler resources
+# referenced in your configurations MUST already exist.
+# Satellite, in particular, will use supplied credentials to log in and validate that
+# resource referenced in your compute resources and compute profiles exist. If they do not,
+# the compute_profiles role will fail. We look forward to implementing creation of these
+# resources in the landing zone repositories in future
+
+# GLOBAL VARIABLES THAT APPLY TO ALL HOSTS
+basevars_global_domain_name: "savage.test"
+basevars_delete_logs: false       # Set to true to wipe the logs directory on inventory_update
+
+# Deployment relationship
+# Set basevars_disconnected_domain: true for air-gapped/highside deployments
+# Set basevars_upstream_connected_deployment to the list of connected domains that feed content here
+# Set basevars_downstream_disconnected_deployment to the list of air-gapped domains this deployment feeds
+basevars_disconnected_domain: false
+# basevars_upstream_connected_deployment:
+#   - ""
+# basevars_downstream_disconnected_deployment:
+#   - ""
+
+default_network: "192.168.140.0"
+default_network_prefix: "22"
+default_network_mask: "255.255.252.0"
+
+default_bond_network: "192.168.142.0"
+default_bond_network_prefix: "22"
+default_bond_network_mask: "255.255.252.0"
+
+rhis_primary_city: "Greenville"
+rhis_primary_state: "South Carolina"
+rhis_timezone: "America/New_York"
+rhis_locale: "en"
+
+rhis_time_servers:
+  - "0.rhel.pool.ntp.org"
+  - "1.rhel.pool.ntp.org"
+  - "2.rhel.pool.ntp.org"
+  - "3.rhel.pool.ntp.org"
+
+rhis_aap_release_version: "2.6"
+rhis_satellite_release_version: "6.18"
+rhis_satellite_os_major_version: "9"
+
+rhis_system_count:
+  satellite: 1
+  capsule: 1
+  idm: 2
+  gitea: 0
+  logserver: 0
+  aapgateway: 0
+  aapcontroller: 1
+  aapedacontroller: 0
+  aaphub: 1
+  aapdatabase: 0
+  aapexecution: 0
+  aaphop: 0
+  kvm_hypervisors: 0
+  quadlet: 2
+  quay: 0
+
+rhis_aws_region: "us-east-2"
+rhis_azure_region: "East US 2"
+
+# ── Infra ISO download for disconnected satellite deployment ──────────────────
+# Required when basevars_downstream_disconnected_deployment is configured.
+# If the ISO does not exist at basevars_*_dvd_iso_path, export_deployment.sh
+# will attempt to download it automatically via the RHSM API.
+#
+# Content set labels are found in Satellite under Content > Other Repositories.
+# Run: ./rh_iso_download.sh --cset <label> --list   to browse available versions
+#
+# The RHSM offline token must be stored at ~/.config/rh_offline_token (mode 0600).
+# Generate one at: https://access.redhat.com/management/api
+#
+# The ISO files go directly from the provisioner to the transfer drive —
+# no additional staging space is required on the provisioner.
+
+# basevars_rhel_dvd_cset: ""            # e.g. rhel-9-for-x86_64-baseos-isos
+# basevars_rhel_dvd_version: "latest"   # specific version (e.g. 9.8) or 'latest'
+# basevars_rhel_dvd_iso_path: ""        # absolute path on provisioner
+
+# basevars_satellite_dvd_cset: ""       # e.g. satellite-6.19-for-rhel-9-x86_64-isos
+# basevars_satellite_dvd_version: "latest"
+# basevars_satellite_dvd_iso_path: ""   # absolute path on provisioner
+
+# ── Container images to bundle for the highside ───────────────────────────────
+# List the full image reference (registry/repo/name:tag) for every container
+# that must be available on the highside after prepare_highside.sh runs.
+# Each image must be pulled locally before running export_deployment.sh.
+# The provisioner container is always bundled automatically — do not list it here.
+rhis_highside_containers: []
+...
